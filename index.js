@@ -1,9 +1,10 @@
+/* eslint-disable quote-props */
 const body = document.querySelector("body");
 
 class Keyboard {
-  constructor(parent, obj) {
+  constructor(parent, keyBoard) {
     this.parent = parent;
-    this.obj = obj;
+    this.obj = keyBoard;
 
     this.elem = document.createElement("div");
     this.elem.classList.add("container");
@@ -11,6 +12,7 @@ class Keyboard {
     this.parent.append(this.elem);
 
     this.renderContent();
+    this.listenners();
   }
 
   renderContent() {
@@ -71,9 +73,25 @@ class Keyboard {
 
     return this.span;
   }
+
+  listenners() {
+    const textarea = this.elem.querySelector("textarea");
+
+    document.addEventListener("click", (evt) => {
+      if (evt.target.closest("textarea")) textarea.classList.add("border");
+      else textarea.classList.remove("border");
+    });
+
+    document.addEventListener("keydown", (evt) => {
+      textarea.focus();
+
+      this.elem.querySelector(`.${evt.code}`).classList.add("active");
+      setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
+    });
+  }
 }
 
-const keys = {
+const keyboard = {
   row1:
     [
       ["Backquote", ["ё", "Ё", "rus", ""], ["`", "~", "eng", "hidden"]],
@@ -156,15 +174,4 @@ const keys = {
 };
 
 // eslint-disable-next-line no-unused-vars
-const keyBoard = new Keyboard(body, keys);
-
-const textarea = document.querySelector("textarea");
-
-document.addEventListener("keydown", () => {
-  textarea.focus();
-});
-
-document.addEventListener("click", (evt) => {
-  if (evt.target.closest("textarea")) textarea.classList.add("border");
-  else textarea.classList.remove("border");
-});
+const keyBoard = new Keyboard(body, keyboard);
