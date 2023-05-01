@@ -112,6 +112,11 @@ margin-bottom: 30px;
     border-radius: 50px;
 }
 
+.keyboard--key.activeCaps {
+    background-color: #2cfd72;
+    border-radius: 50px;
+}
+
 .hidden {
     display: none;
 }

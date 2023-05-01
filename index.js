@@ -122,6 +122,24 @@ class Keyboard {
     setCaretPosition(this.textarea, ps, ps);
   }
 
+  enterHandler() {
+    this.textarea.value += "\n";
+  }
+
+  shiftHandler(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
+    this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
+  }
+
+  capsLockHandler() {
+    this.elem.querySelector(".CapsLock").classList.toggle("activeCaps");
+
+    this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
+    this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
+  }
+
   listenners() {
     document.addEventListener("click", (evt) => {
       if (evt.target.closest("textarea")) {
@@ -134,9 +152,9 @@ class Keyboard {
     document.addEventListener("keydown", (evt) => {
       this.textarea.focus();
 
-      if (evt.code === "Tab") {
-        this.tabClickHandler(evt);
-      }
+      if (evt.code === "Tab") this.tabClickHandler(evt);
+      if (evt.code === "CapsLock") this.capsLockHandler();
+      if (evt.code === "ShiftLeft" || evt.code === "ShiftRight") this.shiftHandler(evt);
 
       if (this.elem.querySelector(`.${evt.code}`)) {
         this.elem.querySelector(`.${evt.code}`).classList.add("active");
@@ -144,17 +162,19 @@ class Keyboard {
       }
     });
 
+    document.addEventListener("keyup", (evt) => {
+      if (evt.code === "ShiftLeft" || evt.code === "ShiftRight") this.shiftHandler(evt);
+    });
+
     const keyBoardKeys = this.elem.querySelectorAll(".keyboard--key");
     keyBoardKeys.forEach((elem) => elem.addEventListener("click", (evt) => {
-      if (evt.target.textContent === "Backspace") {
-        this.backspaceHandler();
-      } else if (evt.target.textContent === "Tab") {
-        this.tabClickHandler(evt);
-      } else if (evt.target.textContent === "Del") {
-        this.delClickHandler();
-      } else {
-        this.textarea.value += evt.target.textContent;
-      }
+      if (evt.target.textContent === "Backspace") this.backspaceHandler();
+      else if (evt.target.textContent === "Tab") this.tabClickHandler(evt);
+      else if (evt.target.textContent === "Del") this.delClickHandler();
+      else if (evt.target.textContent === "Enter") this.enterHandler();
+      else if (evt.target.textContent === "CapsLock") this.capsLockHandler();
+      else if (evt.target.textContent === "Shift") this.textarea.value += "";
+      else this.textarea.value += evt.target.textContent;
     }));
   }
 
