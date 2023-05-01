@@ -13,7 +13,7 @@ class Keyboard {
 
     this.renderContent();
     this.listenners();
-
+    this.lang();
     this.textarea = this.elem.querySelector("textarea");
   }
 
@@ -76,6 +76,11 @@ class Keyboard {
     return this.span;
   }
 
+  lang() {
+    this.elem.querySelectorAll(".rus").forEach((e) => e.classList.toggle("hidden"));
+    this.elem.querySelectorAll(".eng").forEach((e) => e.classList.toggle("hidden"));
+  }
+
   backspaceHandler() {
     const size = this.textarea.value.length;
     this.textarea.value = this.textarea.value.slice(0, size - 1);
@@ -129,6 +134,7 @@ class Keyboard {
   shiftHandler(evt) {
     evt.preventDefault();
     evt.stopPropagation();
+
     this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
     this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
   }
@@ -159,6 +165,10 @@ class Keyboard {
       if (this.elem.querySelector(`.${evt.code}`)) {
         this.elem.querySelector(`.${evt.code}`).classList.add("active");
         setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
+      }
+
+      if (evt.ctrlKey && evt.altKey) {
+        this.lang();
       }
     });
 
