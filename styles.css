@@ -84,12 +84,8 @@ margin-bottom: 30px;
     width: 45%;
 }
 
-.keyboard--key.ShiftRight {
-    width: 90%;
-}
-
 .keyboard--key.Space {
-    width: 500%;
+    width: 800%;
 }
 
 .caseDown, .caseUp, .shiftCaps, .caps {

@@ -14,6 +14,10 @@ class Keyboard {
     this.renderContent();
     this.listenners();
     this.textarea = this.elem.querySelector("textarea");
+
+    this.textarea.addEventListener("keydown", (evt) => {
+      evt.preventDefault();
+    });
   }
 
   renderContent() {
@@ -171,7 +175,26 @@ class Keyboard {
 
     document.addEventListener("keydown", (evt) => {
       this.textarea.focus();
-
+      if (this.elem.querySelector(`.${evt.code}`)) {
+        this.elem.querySelector(`.${evt.code}`).childNodes.forEach((e) => {
+          if (e.className === "rus" || e.className === "eng") {
+            e.childNodes.forEach((d) => {
+              if (d.className === "caseDown" || d.className === "caseUp" || d.className === "caps" || d.className === "shiftCaps") {
+                if (d.textContent === "Tab") this.textarea.value += "";
+                else if (d.textContent === "Backspace") this.backspaceHandler();
+                else if (d.textContent === "Del") this.delClickHandler();
+                else if (d.textContent === "Enter") this.enterHandler();
+                else if (d.textContent === "CapsLock") this.textarea.value += "";
+                else if (d.textContent === "Shift") this.textarea.value += "";
+                else if (d.textContent === "Alt") this.textarea.value += "";
+                else if (d.textContent === "Win") this.textarea.value += "";
+                else if (d.textContent === "Ctrl") this.textarea.value += "";
+                else this.textarea.value += d.textContent;
+              }
+            });
+          }
+        });
+      }
       if (evt.code === "Tab") this.tabClickHandler(evt);
       if (evt.code === "CapsLock") this.capsLockHandler();
       if (evt.code === "ShiftLeft" || evt.code === "ShiftRight") this.shiftHandler(evt);
@@ -191,14 +214,21 @@ class Keyboard {
     });
 
     const keyBoardKeys = this.elem.querySelectorAll(".keyboard--key");
-    keyBoardKeys.forEach((elem) => elem.addEventListener("click", (evt) => {
+    keyBoardKeys.forEach((elem) => elem.addEventListener("mousedown", (evt) => {
       if (evt.target.textContent === "Backspace") this.backspaceHandler();
       else if (evt.target.textContent === "Tab") this.tabClickHandler(evt);
       else if (evt.target.textContent === "Del") this.delClickHandler();
       else if (evt.target.textContent === "Enter") this.enterHandler();
       else if (evt.target.textContent === "CapsLock") this.capsLockHandler();
-      else if (evt.target.textContent === "Shift") this.textarea.value += "";
+      else if (evt.target.textContent === "Shift") this.shiftHandler(evt);
+      else if (evt.target.textContent === "Alt") this.textarea.value += "";
+      else if (evt.target.textContent === "Win") this.textarea.value += "";
+      else if (evt.target.textContent === "Ctrl") this.textarea.value += "";
       else this.textarea.value += evt.target.textContent;
+    }));
+
+    keyBoardKeys.forEach((elem) => elem.addEventListener("mouseup", (evt) => {
+      if (evt.target.textContent === "Shift") this.shiftHandler(evt);
     }));
 
     window.addEventListener("load", () => {
@@ -210,8 +240,6 @@ class Keyboard {
       }
     });
   }
-
-  // eslint-disable-next-line class-methods-use-this
 }
 
 const keyboard = {
