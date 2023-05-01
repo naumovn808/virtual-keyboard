@@ -126,8 +126,15 @@ class Keyboard {
     this.textarea.value += "\n";
   }
 
+  shiftHandler(evt) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
+    this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
+  }
+
   capsLockHandler() {
-    this.elem.querySelector(".CapsLock").classList.toggle("active");
+    this.elem.querySelector(".CapsLock").classList.toggle("activeCaps");
 
     this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
     this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
@@ -147,11 +154,16 @@ class Keyboard {
 
       if (evt.code === "Tab") this.tabClickHandler(evt);
       if (evt.code === "CapsLock") this.capsLockHandler();
+      if (evt.code === "ShiftLeft" || evt.code === "ShiftRight") this.shiftHandler(evt);
 
-      if (this.elem.querySelector(`.${evt.code}`) && !evt.code === "CapsLock") {
+      if (this.elem.querySelector(`.${evt.code}`)) {
         this.elem.querySelector(`.${evt.code}`).classList.add("active");
         setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
       }
+    });
+
+    document.addEventListener("keyup", (evt) => {
+      if (evt.code === "ShiftLeft" || evt.code === "ShiftRight") this.shiftHandler(evt);
     });
 
     const keyBoardKeys = this.elem.querySelectorAll(".keyboard--key");
@@ -161,6 +173,7 @@ class Keyboard {
       else if (evt.target.textContent === "Del") this.delClickHandler();
       else if (evt.target.textContent === "Enter") this.enterHandler();
       else if (evt.target.textContent === "CapsLock") this.capsLockHandler();
+      else if (evt.target.textContent === "Shift") this.textarea.value += "";
       else this.textarea.value += evt.target.textContent;
     }));
   }
