@@ -122,6 +122,17 @@ class Keyboard {
     setCaretPosition(this.textarea, ps, ps);
   }
 
+  enterHandler() {
+    this.textarea.value += "\n";
+  }
+
+  capsLockHandler() {
+    this.elem.querySelector(".CapsLock").classList.toggle("active");
+
+    this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
+    this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
+  }
+
   listenners() {
     document.addEventListener("click", (evt) => {
       if (evt.target.closest("textarea")) {
@@ -134,11 +145,10 @@ class Keyboard {
     document.addEventListener("keydown", (evt) => {
       this.textarea.focus();
 
-      if (evt.code === "Tab") {
-        this.tabClickHandler(evt);
-      }
+      if (evt.code === "Tab") this.tabClickHandler(evt);
+      if (evt.code === "CapsLock") this.capsLockHandler();
 
-      if (this.elem.querySelector(`.${evt.code}`)) {
+      if (this.elem.querySelector(`.${evt.code}`) && !evt.code === "CapsLock") {
         this.elem.querySelector(`.${evt.code}`).classList.add("active");
         setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
       }
@@ -146,15 +156,12 @@ class Keyboard {
 
     const keyBoardKeys = this.elem.querySelectorAll(".keyboard--key");
     keyBoardKeys.forEach((elem) => elem.addEventListener("click", (evt) => {
-      if (evt.target.textContent === "Backspace") {
-        this.backspaceHandler();
-      } else if (evt.target.textContent === "Tab") {
-        this.tabClickHandler(evt);
-      } else if (evt.target.textContent === "Del") {
-        this.delClickHandler();
-      } else {
-        this.textarea.value += evt.target.textContent;
-      }
+      if (evt.target.textContent === "Backspace") this.backspaceHandler();
+      else if (evt.target.textContent === "Tab") this.tabClickHandler(evt);
+      else if (evt.target.textContent === "Del") this.delClickHandler();
+      else if (evt.target.textContent === "Enter") this.enterHandler();
+      else if (evt.target.textContent === "CapsLock") this.capsLockHandler();
+      else this.textarea.value += evt.target.textContent;
     }));
   }
 
