@@ -13,8 +13,11 @@ class Keyboard {
 
     this.renderContent();
     this.listenners();
-
     this.textarea = this.elem.querySelector("textarea");
+
+    this.textarea.addEventListener("keydown", (evt) => {
+      evt.preventDefault();
+    });
   }
 
   renderContent() {
@@ -76,6 +79,26 @@ class Keyboard {
     return this.span;
   }
 
+  langRu() {
+    this.elem.querySelectorAll(".rus").forEach((e) => e.classList.remove("hidden"));
+    this.elem.querySelectorAll(".eng").forEach((e) => e.classList.add("hidden"));
+  }
+
+  lang(flag) {
+    if (flag) {
+      this.langEng();
+      localStorage.removeItem("lang");
+    } else {
+      this.langRu();
+      localStorage.setItem("lang", true);
+    }
+  }
+
+  langEng() {
+    this.elem.querySelectorAll(".rus").forEach((e) => e.classList.add("hidden"));
+    this.elem.querySelectorAll(".eng").forEach((e) => e.classList.remove("hidden"));
+  }
+
   backspaceHandler() {
     const size = this.textarea.value.length;
     this.textarea.value = this.textarea.value.slice(0, size - 1);
@@ -129,6 +152,7 @@ class Keyboard {
   shiftHandler(evt) {
     evt.preventDefault();
     evt.stopPropagation();
+
     this.elem.querySelectorAll(".caseDown").forEach((e) => e.classList.toggle("hidden"));
     this.elem.querySelectorAll(".caps").forEach((e) => e.classList.toggle("hidden"));
   }
@@ -151,7 +175,26 @@ class Keyboard {
 
     document.addEventListener("keydown", (evt) => {
       this.textarea.focus();
-
+      if (this.elem.querySelector(`.${evt.code}`)) {
+        this.elem.querySelector(`.${evt.code}`).childNodes.forEach((e) => {
+          if (e.className === "rus" || e.className === "eng") {
+            e.childNodes.forEach((d) => {
+              if (d.className === "caseDown" || d.className === "caseUp" || d.className === "caps" || d.className === "shiftCaps") {
+                if (d.textContent === "Tab") this.textarea.value += "";
+                else if (d.textContent === "Backspace") this.backspaceHandler();
+                else if (d.textContent === "Del") this.delClickHandler();
+                else if (d.textContent === "Enter") this.enterHandler();
+                else if (d.textContent === "CapsLock") this.textarea.value += "";
+                else if (d.textContent === "Shift") this.textarea.value += "";
+                else if (d.textContent === "Alt") this.textarea.value += "";
+                else if (d.textContent === "Win") this.textarea.value += "";
+                else if (d.textContent === "Ctrl") this.textarea.value += "";
+                else this.textarea.value += d.textContent;
+              }
+            });
+          }
+        });
+      }
       if (evt.code === "Tab") this.tabClickHandler(evt);
       if (evt.code === "CapsLock") this.capsLockHandler();
       if (evt.code === "ShiftLeft" || evt.code === "ShiftRight") this.shiftHandler(evt);
@@ -160,6 +203,10 @@ class Keyboard {
         this.elem.querySelector(`.${evt.code}`).classList.add("active");
         setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
       }
+
+      if (evt.ctrlKey && evt.altKey) {
+        this.lang(localStorage.getItem("lang"));
+      }
     });
 
     document.addEventListener("keyup", (evt) => {
@@ -167,18 +214,32 @@ class Keyboard {
     });
 
     const keyBoardKeys = this.elem.querySelectorAll(".keyboard--key");
-    keyBoardKeys.forEach((elem) => elem.addEventListener("click", (evt) => {
+    keyBoardKeys.forEach((elem) => elem.addEventListener("mousedown", (evt) => {
       if (evt.target.textContent === "Backspace") this.backspaceHandler();
       else if (evt.target.textContent === "Tab") this.tabClickHandler(evt);
       else if (evt.target.textContent === "Del") this.delClickHandler();
       else if (evt.target.textContent === "Enter") this.enterHandler();
       else if (evt.target.textContent === "CapsLock") this.capsLockHandler();
-      else if (evt.target.textContent === "Shift") this.textarea.value += "";
+      else if (evt.target.textContent === "Shift") this.shiftHandler(evt);
+      else if (evt.target.textContent === "Alt") this.textarea.value += "";
+      else if (evt.target.textContent === "Win") this.textarea.value += "";
+      else if (evt.target.textContent === "Ctrl") this.textarea.value += "";
       else this.textarea.value += evt.target.textContent;
     }));
-  }
 
-  // eslint-disable-next-line class-methods-use-this
+    keyBoardKeys.forEach((elem) => elem.addEventListener("mouseup", (evt) => {
+      if (evt.target.textContent === "Shift") this.shiftHandler(evt);
+    }));
+
+    window.addEventListener("load", () => {
+      if (localStorage.getItem("lang")) {
+        this.langRu();
+      }
+      if (!localStorage.getItem("lang")) {
+        this.langEng();
+      }
+    });
+  }
 }
 
 const keyboard = {
