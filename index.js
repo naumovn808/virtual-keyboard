@@ -13,7 +13,6 @@ class Keyboard {
 
     this.renderContent();
     this.listenners();
-    this.lang();
     this.textarea = this.elem.querySelector("textarea");
   }
 
@@ -76,9 +75,24 @@ class Keyboard {
     return this.span;
   }
 
-  lang() {
-    this.elem.querySelectorAll(".rus").forEach((e) => e.classList.toggle("hidden"));
-    this.elem.querySelectorAll(".eng").forEach((e) => e.classList.toggle("hidden"));
+  langRu() {
+    this.elem.querySelectorAll(".rus").forEach((e) => e.classList.remove("hidden"));
+    this.elem.querySelectorAll(".eng").forEach((e) => e.classList.add("hidden"));
+  }
+
+  lang(flag) {
+    if (flag) {
+      this.langEng();
+      localStorage.removeItem("lang");
+    } else {
+      this.langRu();
+      localStorage.setItem("lang", true);
+    }
+  }
+
+  langEng() {
+    this.elem.querySelectorAll(".rus").forEach((e) => e.classList.add("hidden"));
+    this.elem.querySelectorAll(".eng").forEach((e) => e.classList.remove("hidden"));
   }
 
   backspaceHandler() {
@@ -168,7 +182,7 @@ class Keyboard {
       }
 
       if (evt.ctrlKey && evt.altKey) {
-        this.lang();
+        this.lang(localStorage.getItem("lang"));
       }
     });
 
@@ -186,6 +200,15 @@ class Keyboard {
       else if (evt.target.textContent === "Shift") this.textarea.value += "";
       else this.textarea.value += evt.target.textContent;
     }));
+
+    window.addEventListener("load", () => {
+      if (localStorage.getItem("lang")) {
+        this.langRu();
+      }
+      if (!localStorage.getItem("lang")) {
+        this.langEng();
+      }
+    });
   }
 
   // eslint-disable-next-line class-methods-use-this
