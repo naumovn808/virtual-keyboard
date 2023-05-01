@@ -1,9 +1,10 @@
-.hidden {
-    display: none;
-}
-
 .title {
     font-size: 36px;
+}
+
+.rus {
+    display: block;
+    width: 100%;
 }
 
 .container {
@@ -15,7 +16,7 @@
 }
 
 .textarea {
-width: 100%;
+width: 72%;
 min-height: 200px;
 outline: none;
 margin-bottom: 30px;
@@ -42,6 +43,7 @@ margin-bottom: 30px;
 
 
 .keyboard--key {
+    position: relative;
     display: block;
     min-width: 40px;
     height: 40px;
@@ -55,6 +57,7 @@ margin-bottom: 30px;
     cursor: pointer;
     transition: border-radius 0.5s, background-color 0.5s;
 }
+
 
 .keyboard--key.Backspace,
 .keyboard--key.Tab,
@@ -78,20 +81,28 @@ margin-bottom: 30px;
 } 
 
 .keyboard--key.ArrowUp {
-    width: 40px;
-    height: 40px;
+    width: 45%;
+}
+
+.keyboard--key.ShiftRight {
+    width: 90%;
 }
 
 .keyboard--key.Space {
-    width: 800%;
+    width: 500%;
 }
 
 .caseDown, .caseUp, .shiftCaps, .caps {
-    width: 100;
+    display: block;
+    width: 100%;
     min-height: 40px;
 } 
 
 .keyboard--key:hover {
+    background-color: #159b42;
+}
+
+.keyboard--key:active {
     background-color: #2cfd72;
     border-radius: 50px;
 }
@@ -99,4 +110,8 @@ margin-bottom: 30px;
 .keyboard--key.active {
     background-color: #2cfd72;
     border-radius: 50px;
+}
+
+.hidden {
+    display: none;
 }

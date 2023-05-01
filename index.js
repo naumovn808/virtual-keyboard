@@ -13,6 +13,8 @@ class Keyboard {
 
     this.renderContent();
     this.listenners();
+
+    this.textarea = this.elem.querySelector("textarea");
   }
 
   renderContent() {
@@ -74,21 +76,89 @@ class Keyboard {
     return this.span;
   }
 
-  listenners() {
-    const textarea = this.elem.querySelector("textarea");
+  backspaceHandler() {
+    const size = this.textarea.value.length;
+    this.textarea.value = this.textarea.value.slice(0, size - 1);
+  }
 
+  tabClickHandler(evt) {
+    evt.preventDefault();
+    this.textarea.value = `${this.textarea.value}    `;
+  }
+
+  delClickHandler() {
+    // получение позиции курсора
+    function getCaretPos(obj) {
+      obj.focus();
+
+      if (obj.selectionStart) return obj.selectionStart;// Gecko
+      if (document.selection) {
+        const sel = document.selection.createRange();
+        const clone = sel.duplicate();
+        sel.collapse(true);
+        clone.moveToElementText(obj);
+        clone.setEndPoint("EndToEnd", sel);
+        return clone.text.length;
+      }
+
+      return 0;
+    }
+    // установка курсора после удаления буквы
+    function setCaretPosition(obj, start, end) {
+      if (obj.setSelectionRange) {
+        obj.focus();
+        obj.setSelectionRange(start, end);
+      } else if (obj.createTextRange) {
+        const range = obj.createTextRange();
+        range.collapse(true);
+        range.moveEnd("character", end);
+        range.moveStart("character", start);
+        range.select();
+      }
+    }
+
+    const ps = getCaretPos(this.textarea);
+    this.textarea.value = this.textarea.value.slice(0, ps) + this.textarea.value.slice(ps + 1);
+    setCaretPosition(this.textarea, ps, ps);
+  }
+
+  listenners() {
     document.addEventListener("click", (evt) => {
-      if (evt.target.closest("textarea")) textarea.classList.add("border");
-      else textarea.classList.remove("border");
+      if (evt.target.closest("textarea")) {
+        this.textarea.classList.add("border");
+      } else {
+        this.textarea.classList.remove("border");
+      }
     });
 
     document.addEventListener("keydown", (evt) => {
-      textarea.focus();
+      this.textarea.focus();
 
-      this.elem.querySelector(`.${evt.code}`).classList.add("active");
-      setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
+      if (evt.code === "Tab") {
+        this.tabClickHandler(evt);
+      }
+
+      if (this.elem.querySelector(`.${evt.code}`)) {
+        this.elem.querySelector(`.${evt.code}`).classList.add("active");
+        setTimeout(() => { this.elem.querySelector(`.${evt.code}`).classList.remove("active"); }, 400);
+      }
     });
+
+    const keyBoardKeys = this.elem.querySelectorAll(".keyboard--key");
+    keyBoardKeys.forEach((elem) => elem.addEventListener("click", (evt) => {
+      if (evt.target.textContent === "Backspace") {
+        this.backspaceHandler();
+      } else if (evt.target.textContent === "Tab") {
+        this.tabClickHandler(evt);
+      } else if (evt.target.textContent === "Del") {
+        this.delClickHandler();
+      } else {
+        this.textarea.value += evt.target.textContent;
+      }
+    }));
   }
+
+  // eslint-disable-next-line class-methods-use-this
 }
 
 const keyboard = {
